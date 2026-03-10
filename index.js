@@ -9,11 +9,11 @@ const autoresRoutes = require('./routes/autores');
 const usuariosRoutes = require('./routes/usuarios');
 const prestamosRoutes = require('./routes/prestamos');
 
-// Registrar rutas
-app.use('/libros', librosRoutes);
-app.use('/autores', autoresRoutes);
-app.use('/usuarios', usuariosRoutes);
-app.use('/prestamos', prestamosRoutes);
+// Registrar rutas (SIN prefijo porque ya lo tienen dentro)
+app.use(librosRoutes);
+app.use(autoresRoutes);
+app.use(usuariosRoutes);
+app.use(prestamosRoutes);
 
 const PORT = 3000;
 
