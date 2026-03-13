@@ -1,27 +1,12 @@
 const express = require('express');
-const Routes = express.Router();
-const db = require('../db'); // conexión a la base de datos
+const router = express.Router();
+const db = require('../db');
+
 
 // =============================
 // GET - TODOS LOS LIBROS
 // =============================
-Routes.get('/libros', (req, res) => {
-
-    const apiKey = req.headers['password'];
-
-    if (!apiKey) {
-        return res.status(401).json({
-            success: false,
-            message: 'API key es requerida'   
-        });
-    }
-
-    if (apiKey !== '6789') {
-        return res.status(403).json({
-            success: false,
-            message: 'Error la password no es correcta'
-        });
-    }
+router.get('/', (req, res) => {
 
     const sql = `SELECT * FROM libros`;
 
@@ -47,23 +32,7 @@ Routes.get('/libros', (req, res) => {
 // =============================
 // GET - LIBRO POR ID
 // =============================
-Routes.get('/libros/:id', (req, res) => {
-
-    const apiKey = req.headers['password'];
-
-    if (!apiKey) {
-        return res.status(401).json({
-            success: false,
-            message: 'API key es requerida'
-        });
-    }
-
-    if (apiKey !== '6789') {
-        return res.status(403).json({
-            success: false,
-            message: 'Error la password no es correcta'
-        });
-    }
+router.get('/:id', (req, res) => {
 
     const id = req.params.id;
 
@@ -72,18 +41,21 @@ Routes.get('/libros/:id', (req, res) => {
     db.get(sql, [id], (err, row) => {
 
         if (err) {
-            return res.status(500).json({ success:false, message: err.message });
+            return res.status(500).json({
+                success: false,
+                message: err.message
+            });
         }
 
         if (!row) {
             return res.status(404).json({
-                success:false,
+                success: false,
                 message: "Libro no encontrado"
             });
         }
 
         res.json({
-            success:true,
+            success: true,
             data: row
         });
 
@@ -95,14 +67,14 @@ Routes.get('/libros/:id', (req, res) => {
 // =============================
 // POST - CREAR LIBRO
 // =============================
-Routes.post('/libros', (req, res) => {
+router.post('/', (req, res) => {
 
     const { titulo, genero, anio_publicacion } = req.body;
 
     if (!titulo) {
         return res.status(400).json({
-            success:false,
-            message:"El titulo es obligatorio"
+            success: false,
+            message: "El titulo es obligatorio"
         });
     }
 
@@ -111,19 +83,19 @@ Routes.post('/libros', (req, res) => {
     VALUES (?, ?, ?)
     `;
 
-    db.run(sql, [titulo, genero, anio_publicacion], function(err){
+    db.run(sql, [titulo, genero, anio_publicacion], function (err) {
 
-        if(err){
+        if (err) {
             return res.status(500).json({
-                success:false,
-                message:err.message
+                success: false,
+                message: err.message
             });
         }
 
         res.status(201).json({
-            success:true,
-            data:{
-                id:this.lastID
+            success: true,
+            data: {
+                id: this.lastID
             }
         });
 
@@ -135,7 +107,7 @@ Routes.post('/libros', (req, res) => {
 // =============================
 // PUT - ACTUALIZAR LIBRO
 // =============================
-Routes.put('/libros/:id', (req,res)=>{
+router.put('/:id', (req, res) => {
 
     const id = req.params.id;
     const { titulo, genero, anio_publicacion } = req.body;
@@ -146,25 +118,25 @@ Routes.put('/libros/:id', (req,res)=>{
     WHERE id_libro=?
     `;
 
-    db.run(sql,[titulo,genero,anio_publicacion,id],function(err){
+    db.run(sql, [titulo, genero, anio_publicacion, id], function (err) {
 
-        if(err){
+        if (err) {
             return res.status(500).json({
-                success:false,
-                message:err.message
+                success: false,
+                message: err.message
             });
         }
 
-        if(this.changes === 0){
+        if (this.changes === 0) {
             return res.status(404).json({
-                success:false,
-                message:"Libro no encontrado"
+                success: false,
+                message: "Libro no encontrado"
             });
         }
 
         res.json({
-            success:true,
-            message:"Libro actualizado"
+            success: true,
+            message: "Libro actualizado"
         });
 
     });
@@ -175,35 +147,35 @@ Routes.put('/libros/:id', (req,res)=>{
 // =============================
 // DELETE - ELIMINAR LIBRO
 // =============================
-Routes.delete('/libros/:id',(req,res)=>{
+router.delete('/:id', (req, res) => {
 
     const id = req.params.id;
 
     const sql = `DELETE FROM libros WHERE id_libro=?`;
 
-    db.run(sql,[id],function(err){
+    db.run(sql, [id], function (err) {
 
-        if(err){
+        if (err) {
             return res.status(500).json({
-                success:false,
-                message:err.message
+                success: false,
+                message: err.message
             });
         }
 
-        if(this.changes === 0){
+        if (this.changes === 0) {
             return res.status(404).json({
-                success:false,
-                message:"Libro no encontrado"
+                success: false,
+                message: "Libro no encontrado"
             });
         }
 
         res.json({
-            success:true,
-            message:"Libro eliminado"
+            success: true,
+            message: "Libro eliminado"
         });
 
     });
 
 });
 
-module.exports = Routes;
+module.exports = router;
