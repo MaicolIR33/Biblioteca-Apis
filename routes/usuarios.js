@@ -38,7 +38,7 @@ Routes.get('/usuarios', (req, res) => {
 });
 
 
-//USUARIO POR ID 
+//USUARIO POR ID para la api
 Routes.get('/usuarios/:id', (req, res) => {
     const apiKey = req.headers['password']
 
